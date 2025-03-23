@@ -5,8 +5,6 @@ class Product {
   final String barcode;
   final double price;
   final int quantity;
-  final String category; // Nuevo campo
-  final String brand; // Nuevo campo
 
   Product({
     required this.id,
@@ -15,33 +13,11 @@ class Product {
     required this.barcode,
     required this.price,
     required this.quantity,
-    this.category = '',
-    this.brand = '',
+    required String category,
+    required String brand,
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'inventoryId': inventoryId,
-      'name': name,
-      'barcode': barcode,
-      'price': price,
-      'quantity': quantity,
-      'category': category,
-      'brand': brand,
-    };
-  }
+  String? get category => null;
 
-  static Product fromJson(Map<String, dynamic> json) {
-    return Product(
-      id: json['id'],
-      inventoryId: json['inventoryId'],
-      name: json['name'],
-      barcode: json['barcode'],
-      price: json['price'],
-      quantity: json['quantity'],
-      category: json['category'],
-      brand: json['brand'],
-    );
-  }
+  String? get brand => null;
 }

@@ -7,35 +7,43 @@ class LoadInventories extends InventoryEvent {}
 
 class LoadProducts extends InventoryEvent {
   final String inventoryId;
+
   LoadProducts(this.inventoryId);
 }
 
 class AddInventoryEvent extends InventoryEvent {
   final Inventory inventory;
+
   AddInventoryEvent(this.inventory);
 }
 
 class AddProductEvent extends InventoryEvent {
   final Product product;
+
   AddProductEvent(this.product);
-}
-
-class UpdateInventoryEvent extends InventoryEvent {
-  final Inventory inventory;
-  UpdateInventoryEvent(this.inventory);
-}
-
-class UpdateProductEvent extends InventoryEvent {
-  final Product product;
-  UpdateProductEvent(this.product);
 }
 
 class DeleteInventoryEvent extends InventoryEvent {
   final String inventoryId;
+
   DeleteInventoryEvent(this.inventoryId);
 }
 
 class DeleteProductEvent extends InventoryEvent {
   final String productId;
-  DeleteProductEvent(this.productId);
+  final String inventoryId;
+
+  DeleteProductEvent(this.productId, this.inventoryId);
+}
+
+class UpdateInventoryEvent extends InventoryEvent {
+  final Inventory inventory;
+
+  UpdateInventoryEvent(this.inventory);
+}
+
+class UpdateProductEvent extends InventoryEvent {
+  final Product product;
+
+  UpdateProductEvent(this.product);
 }

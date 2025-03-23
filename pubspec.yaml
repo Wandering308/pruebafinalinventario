@@ -1,17 +1,17 @@
 name: inventario_app_finish
 description: "Aplicación de gestión de inventarios y productos con Flutter."
 
-# The following line prevents the package from being accidentally published to
-# pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+# Evita la publicación accidental a pub.dev
+publish_to: 'none'
 
-# The following defines the version and build number for your application.
+# Versión de la aplicación
 version: 1.0.0+1
 
+# Configuración del entorno
 environment:
-  sdk: ">=3.0.0 <4.0.0"  # Asegúrate de que la versión del SDK sea compatible con Flutter 3.x
+  sdk: ">=3.0.0 <4.0.0"  # Compatible con Flutter 3.x
 
-# Dependencies specify other packages that your package needs in order to work.
+# Dependencias principales
 dependencies:
   flutter:
     sdk: flutter
@@ -25,6 +25,7 @@ dependencies:
   # Iconos de Cupertino (opcional, para diseño iOS)
   cupertino_icons: ^1.0.8
 
+# Dependencias de desarrollo
 dev_dependencies:
   flutter_test:
     sdk: flutter

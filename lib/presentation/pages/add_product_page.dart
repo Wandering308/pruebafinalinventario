@@ -15,7 +15,7 @@ class AddProductPage extends StatelessWidget {
   final _categoryController = TextEditingController();
   final _brandController = TextEditingController();
 
-  AddProductPage({required this.inventoryId});
+  AddProductPage({super.key, required this.inventoryId});
 
   @override
   Widget build(BuildContext context) {

@@ -12,7 +12,7 @@ class EditInventoryPage extends StatelessWidget {
   final _descriptionController = TextEditingController();
   final _quantityController = TextEditingController();
 
-  EditInventoryPage({required this.inventory}) {
+  EditInventoryPage({super.key, required this.inventory}) {
     _nameController.text = inventory.name;
     _descriptionController.text = inventory.description;
     _quantityController.text = inventory.quantity.toString();

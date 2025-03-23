@@ -1,11 +1,13 @@
-import '../entities/inventory.dart';
-import '../entities/product.dart';
+import 'package:inventario_app_finish/domain/entities/inventory.dart';
+import 'package:inventario_app_finish/domain/entities/product.dart';
 
-/// Interfaz que define las operaciones que el repositorio debe implementar.
 abstract class InventoryRepository {
-  /// Obtiene la lista de inventarios.
   Future<List<Inventory>> getInventories();
-
-  /// Obtiene la lista de productos de un inventario específico.
   Future<List<Product>> getProducts(String inventoryId);
+  Future<void> addInventory(Inventory inventory);
+  Future<void> addProduct(Product product);
+  Future<void> updateInventory(Inventory inventory);
+  Future<void> updateProduct(Product product);
+  Future<void> deleteInventory(String inventoryId);
+  Future<void> deleteProduct(String productId);
 }
