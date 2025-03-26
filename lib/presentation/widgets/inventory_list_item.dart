@@ -5,6 +5,8 @@ import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
 
 class InventoryListPage extends StatelessWidget {
+  const InventoryListPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

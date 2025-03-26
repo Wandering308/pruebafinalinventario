@@ -1,58 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 
 class AddInventoryPage extends StatelessWidget {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController quantityController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
 
   AddInventoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Agregar Inventario'),
-      ),
+      appBar: AppBar(title: Text('Agregar Inventario')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'Nombre'),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: InputDecoration(labelText: 'Descripción'),
-            ),
-            TextField(
-              controller: quantityController,
-              decoration: InputDecoration(labelText: 'Cantidad'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final inventory = Inventory(
-                  id: DateTime.now().toString(),
-                  name: nameController.text,
-                  description: descriptionController.text,
-                  quantity: int.parse(quantityController.text),
-                );
-
-                // Enviar evento al Bloc para agregar el inventario
-                context.read<InventoryBloc>().add(AddInventoryEvent(inventory));
-
-                // Regresar a la página anterior
-                Navigator.of(context).pop();
-              },
-              child: Text('Agregar Inventario'),
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(labelText: 'Nombre'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese un nombre';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    final newInventory = Inventory(
+                      id: DateTime.now().toString(), // Genera un ID único
+                      name: _nameController.text,
+                    );
+                    context.read<InventoryBloc>().add(
+                          AddInventoryEvent(newInventory),
+                        );
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text('Agregar'),
+              ),
+            ],
+          ),
         ),
       ),
     );

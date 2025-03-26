@@ -9,13 +9,9 @@ class EditInventoryPage extends StatelessWidget {
   final Inventory inventory;
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  final _quantityController = TextEditingController();
 
   EditInventoryPage({super.key, required this.inventory}) {
     _nameController.text = inventory.name;
-    _descriptionController.text = inventory.description;
-    _quantityController.text = inventory.quantity.toString();
   }
 
   @override
@@ -38,21 +34,6 @@ class EditInventoryPage extends StatelessWidget {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(labelText: 'Descripción'),
-              ),
-              TextFormField(
-                controller: _quantityController,
-                decoration: InputDecoration(labelText: 'Cantidad'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese una cantidad';
-                  }
-                  return null;
-                },
-              ),
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
@@ -60,8 +41,6 @@ class EditInventoryPage extends StatelessWidget {
                     final updatedInventory = Inventory(
                       id: inventory.id,
                       name: _nameController.text,
-                      description: _descriptionController.text,
-                      quantity: int.parse(_quantityController.text),
                     );
                     context.read<InventoryBloc>().add(
                           UpdateInventoryEvent(updatedInventory),
@@ -78,3 +57,4 @@ class EditInventoryPage extends StatelessWidget {
     );
   }
 }
+

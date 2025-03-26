@@ -16,15 +16,11 @@ class InventoryListPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              // Pasa el InventoryBloc al navegar a AddInventoryPage
+              // El BlocProvider debería estar fuera del MaterialPageRoute
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => BlocProvider.value(
-                    value: BlocProvider.of<InventoryBloc>(
-                        context), // Pasa el InventoryBloc
-                    child: AddInventoryPage(),
-                  ),
+                  builder: (context) => AddInventoryPage(),
                 ),
               );
             },

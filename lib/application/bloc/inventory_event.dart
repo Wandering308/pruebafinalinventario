@@ -1,49 +1,18 @@
+import 'package:equatable/equatable.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
-import 'package:inventario_app_finish/domain/entities/product.dart';
 
-abstract class InventoryEvent {}
+abstract class InventoryEvent extends Equatable {
+  const InventoryEvent();
 
-class LoadInventories extends InventoryEvent {}
-
-class LoadProducts extends InventoryEvent {
-  final String inventoryId;
-
-  LoadProducts(this.inventoryId);
+  @override
+  List<Object> get props => [];
 }
 
 class AddInventoryEvent extends InventoryEvent {
   final Inventory inventory;
 
-  AddInventoryEvent(this.inventory);
-}
+  const AddInventoryEvent(this.inventory);
 
-class AddProductEvent extends InventoryEvent {
-  final Product product;
-
-  AddProductEvent(this.product);
-}
-
-class DeleteInventoryEvent extends InventoryEvent {
-  final String inventoryId;
-
-  DeleteInventoryEvent(this.inventoryId);
-}
-
-class DeleteProductEvent extends InventoryEvent {
-  final String productId;
-  final String inventoryId;
-
-  DeleteProductEvent(this.productId, this.inventoryId);
-}
-
-class UpdateInventoryEvent extends InventoryEvent {
-  final Inventory inventory;
-
-  UpdateInventoryEvent(this.inventory);
-}
-
-class UpdateProductEvent extends InventoryEvent {
-  final Product product;
-
-  UpdateProductEvent(this.product);
+  @override
+  List<Object> get props => [inventory];
 }
