@@ -2,26 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
-import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
-import 'package:inventario_app_finish/presentation/widgets/inventory_list_item.dart';
+import 'package:inventario_app_finish/presentation/pages/add_product_page.dart';
+import 'package:inventario_app_finish/domain/entities/product.dart';
 
-class InventoryListPage extends StatelessWidget {
-  const InventoryListPage({super.key});
+class ProductListPage extends StatelessWidget {
+  final String inventoryId;
+
+  const ProductListPage({super.key, required this.inventoryId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Inventarios'),
+        title: Text('Productos del Inventario'),
         actions: [
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              // El BlocProvider debería estar fuera del MaterialPageRoute
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddInventoryPage(),
+                  builder: (context) =>
+                      AddProductPage(inventoryId: inventoryId),
                 ),
               );
             },
@@ -33,22 +35,24 @@ class InventoryListPage extends StatelessWidget {
           if (state is InventoryLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is InventoryLoaded) {
+            final products = state.products
+                .where((product) => product.inventoryId == inventoryId)
+                .toList();
             return ListView.builder(
-              itemCount: state.inventories.length,
+              itemCount: products.length,
               itemBuilder: (context, index) {
-                final inventory = state.inventories[index];
-                return InventoryListItem(
-                  inventory: inventory,
-                  onTap: () {
-                    // Handle item tap
-                  },
+                final product = products[index];
+                return ListTile(
+                  title: Text(product.name),
+                  subtitle: Text(product.barcode ?? 'Sin código de barras'),
+                  trailing: Text('Cantidad: ${product.quantity}'),
                 );
               },
             );
           } else if (state is InventoryError) {
             return Center(child: Text(state.message));
           } else {
-            return Center(child: Text('No hay inventarios disponibles'));
+            return Center(child: Text('No hay productos disponibles'));
           }
         },
       ),
