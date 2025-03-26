@@ -13,4 +13,20 @@ class Inventory extends Equatable {
 
   @override
   List<Object?> get props => [id, name, description];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+    };
+  }
+
+  factory Inventory.fromMap(Map<String, dynamic> map) {
+    return Inventory(
+      id: map['id'],
+      name: map['name'],
+      description: map['description'],
+    );
+  }
 }
