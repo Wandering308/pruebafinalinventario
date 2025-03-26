@@ -15,8 +15,7 @@ class InventoryListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(inventory.name),
-      subtitle: Text(inventory.description),
-      trailing: Text('Cantidad: ${inventory.quantity}'),
+      subtitle: Text(inventory.description ?? 'Sin descripción'),
       onTap: onTap,
     );
   }
