@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/presentation/pages/add_product_page.dart';
-import 'package:inventario_app_finish/domain/entities/product.dart';
 
 class ProductListPage extends StatelessWidget {
   final String inventoryId;
@@ -44,7 +43,7 @@ class ProductListPage extends StatelessWidget {
                 final product = products[index];
                 return ListTile(
                   title: Text(product.name),
-                  subtitle: Text(product.barcode ?? 'Sin código de barras'),
+                  subtitle: Text(product.barcode),
                   trailing: Text('Cantidad: ${product.quantity}'),
                 );
               },

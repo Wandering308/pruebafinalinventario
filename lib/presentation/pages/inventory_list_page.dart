@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
+import 'package:inventario_app_finish/presentation/pages/product_list_page.dart'; // Importar la página de productos
 import 'package:inventario_app_finish/presentation/widgets/inventory_list_item.dart';
 
 class InventoryListPage extends StatelessWidget {
@@ -40,7 +41,14 @@ class InventoryListPage extends StatelessWidget {
                 return InventoryListItem(
                   inventory: inventory,
                   onTap: () {
-                    // Handle item tap
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductListPage(
+                            inventoryId: inventory
+                                .id), // Navegar a la página de productos
+                      ),
+                    );
                   },
                 );
               },

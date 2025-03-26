@@ -21,7 +21,8 @@ dependencies:
   equatable: ^2.0.7     # Para comparar objetos de manera eficiente
   shared_preferences: ^2.2.3  # Para persistencia local
   get_it: ^8.0.3        # Para inyección de dependencias
-
+  sqflite: ^2.0.0+3
+  path_provider: ^2.0.2
   # Iconos de Cupertino (opcional, para diseño iOS)
   cupertino_icons: ^1.0.8
 
