@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
+
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage_impl.dart';
 import 'package:inventario_app_finish/infrastructure/repositories/inventory_repository_impl.dart';
@@ -19,8 +20,7 @@ final getIt = GetIt.instance;
 Future<void> setup() async {
   // Datasources
   getIt.registerLazySingleton<LocalStorage>(() => LocalStorageImpl());
-  getIt.registerLazySingleton<DatabaseHelper>(
-      () => DatabaseHelper()); // Registrando DatabaseHelper
+  getIt.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());
 
   // Repositories
   getIt.registerLazySingleton<InventoryRepository>(
@@ -45,5 +45,13 @@ Future<void> setup() async {
   // Bloc
   getIt.registerLazySingleton(() => InventoryBloc(
         databaseHelper: getIt<DatabaseHelper>(),
+        getInventories: getIt<GetInventories>(),
+        getProducts: getIt<GetProducts>(),
+        addInventory: getIt<AddInventory>(),
+        addProduct: getIt<AddProduct>(),
+        deleteInventory: getIt<DeleteInventory>(),
+        deleteProduct: getIt<DeleteProduct>(),
+        updateInventory: getIt<UpdateInventory>(),
+        updateProduct: getIt<UpdateProduct>(),
       ));
 }

@@ -5,7 +5,7 @@ class Inventory extends Equatable {
   final String name;
   final String? description;
 
-  Inventory({
+  const Inventory({
     required this.id,
     required this.name,
     this.description,

@@ -10,7 +10,7 @@ class Product extends Equatable {
   final String? category;
   final String? brand;
 
-  Product({
+  const Product({
     required this.id,
     required this.inventoryId,
     required this.name,
