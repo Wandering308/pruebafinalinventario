@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
@@ -17,11 +16,11 @@ class EditProductPage extends StatelessWidget {
 
   EditProductPage({super.key, required this.product}) {
     _nameController.text = product.name;
-    _barcodeController.text = product.barcode;
+    _barcodeController.text = product.barcode ?? '';
     _priceController.text = product.price.toString();
     _quantityController.text = product.quantity.toString();
-    _categoryController.text = product.category!;
-    _brandController.text = product.brand!;
+    _categoryController.text = product.category ?? '';
+    _brandController.text = product.brand ?? '';
   }
 
   @override

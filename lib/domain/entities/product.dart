@@ -5,18 +5,25 @@ class Product extends Equatable {
   final String inventoryId;
   final String name;
   final String? barcode;
+  final double price;
   final int quantity;
+  final String? category;
+  final String? brand;
 
   Product({
     required this.id,
     required this.inventoryId,
     required this.name,
     this.barcode,
+    required this.price,
     required this.quantity,
+    this.category,
+    this.brand,
   });
 
   @override
-  List<Object?> get props => [id, inventoryId, name, barcode, quantity];
+  List<Object?> get props =>
+      [id, inventoryId, name, barcode, price, quantity, category, brand];
 
   Map<String, dynamic> toMap() {
     return {
@@ -24,7 +31,10 @@ class Product extends Equatable {
       'inventoryId': inventoryId,
       'name': name,
       'barcode': barcode,
+      'price': price,
       'quantity': quantity,
+      'category': category,
+      'brand': brand,
     };
   }
 
@@ -34,7 +44,10 @@ class Product extends Equatable {
       inventoryId: map['inventoryId'],
       name: map['name'],
       barcode: map['barcode'],
+      price: map['price'],
       quantity: map['quantity'],
+      category: map['category'],
+      brand: map['brand'],
     );
   }
 }

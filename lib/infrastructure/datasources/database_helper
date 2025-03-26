@@ -1,14 +1,13 @@
-import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:inventario_app_finish/domain/entities/inventory.dart';
-import 'package:inventario_app_finish/domain/entities/product.dart';
+import 'package:path/path.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
-  static Database? _database;
-
+  
   DatabaseHelper._internal();
+
+  static Database? _database;
 
   Future<Database> get database async {
     if (_database != null) return _database!;
@@ -17,53 +16,77 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    final databasePath = await getDatabasesPath();
-    final path = join(databasePath, 'inventories.db');
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'inventory.db');
 
     return await openDatabase(
       path,
       version: 1,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE inventories(
-            id TEXT PRIMARY KEY,
-            name TEXT,
-            description TEXT
-          )
-        ''');
-        await db.execute('''
-          CREATE TABLE products(
-            id TEXT PRIMARY KEY,
-            inventoryId TEXT,
-            name TEXT,
-            barcode TEXT,
-            quantity INTEGER,
-            FOREIGN KEY (inventoryId) REFERENCES inventories (id)
-          )
-        ''');
-      },
+      onCreate: _onCreate,
     );
   }
 
-  Future<void> insertInventory(Inventory inventory) async {
-    final db = await database;
-    await db.insert('inventories', inventory.toMap());
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE inventories(
+        id TEXT PRIMARY KEY,
+        name TEXT,
+        description TEXT
+      )
+    ''');
+    await db.execute('''
+      CREATE TABLE products(
+        id TEXT PRIMARY KEY,
+        inventoryId TEXT,
+        name TEXT,
+        barcode TEXT,
+        price REAL,
+        quantity INTEGER,
+        category TEXT,
+        brand TEXT,
+        FOREIGN KEY (inventoryId) REFERENCES inventories (id)
+      )
+    ''');
   }
 
-  Future<void> insertProduct(Product product) async {
+  Future<List<Map<String, dynamic>>> getInventories() async {
     final db = await database;
-    await db.insert('products', product.toMap());
+    return await db.query('inventories');
   }
 
-  Future<List<Inventory>> getInventories() async {
+  Future<List<Map<String, dynamic>>> getProducts(String inventoryId) async {
     final db = await database;
-    final result = await db.query('inventories');
-    return result.map((json) => Inventory.fromMap(json)).toList();
+    return await db.query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
   }
 
-  Future<List<Product>> getProducts(String inventoryId) async {
+  Future<void> insertInventory(Map<String, dynamic> inventory) async {
     final db = await database;
-    final result = await db.query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
-    return result.map((json) => Product.fromMap(json)).toList();
+    await db.insert('inventories', inventory);
+  }
+
+  Future<void> insertProduct(Map<String, dynamic> product) async {
+    final db = await database;
+    await db.insert('products', product);
+  }
+
+  Future<void> deleteInventory(String id) async {
+    final db = await database;
+    await db.delete('inventories', where: 'id = ?', whereArgs: [id]);
+    await db.delete('products', where: 'inventoryId = ?', whereArgs: [id]);
+  }
+
+  Future<void> deleteProduct(String id) async {
+    final db = await database;
+    await db.delete('products', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> updateInventory(Map<String, dynamic> inventory) async {
+    final db = await database;
+    await db.update('inventories', inventory, where: 'id = ?', whereArgs: [inventory['id']]);
+  }
+
+  Future<void> updateProduct(Map<String, dynamic> product) async {
+    final db = await database;
+    await db.update('products', product, where: 'id = ?', whereArgs: [product['id']]);
   }
 }

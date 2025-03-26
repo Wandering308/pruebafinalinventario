@@ -43,7 +43,7 @@ class ProductListPage extends StatelessWidget {
                 final product = products[index];
                 return ListTile(
                   title: Text(product.name),
-                  subtitle: Text(product.barcode),
+                  subtitle: Text(product.barcode ?? ''),
                   trailing: Text('Cantidad: ${product.quantity}'),
                 );
               },

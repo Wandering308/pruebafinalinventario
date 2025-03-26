@@ -2,26 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
-
 import 'package:inventario_app_finish/presentation/pages/inventory_list_page.dart';
+import 'package:inventario_app_finish/injection.dart'; // Asegúrate de importar la configuración de inyección
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final databaseHelper = DatabaseHelper();
-  runApp(MyApp(databaseHelper: databaseHelper));
+  await setup(); // Configuración de inyección de dependencias
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final DatabaseHelper databaseHelper;
-
-  const MyApp({super.key, required this.databaseHelper});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          InventoryBloc(databaseHelper)..add(LoadInventories()),
+      create: (context) => getIt<InventoryBloc>()..add(LoadInventories()),
       child: MaterialApp(
         title: 'Inventario App',
         debugShowCheckedModeBanner: false,
