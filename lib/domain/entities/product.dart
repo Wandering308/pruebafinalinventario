@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-class Product extends Equatable {
+class Product {
   final String id;
   final String inventoryId;
   final String name;
@@ -10,7 +8,7 @@ class Product extends Equatable {
   final String? category;
   final String? brand;
 
-  const Product({
+  Product({
     required this.id,
     required this.inventoryId,
     required this.name,
@@ -20,23 +18,6 @@ class Product extends Equatable {
     this.category,
     this.brand,
   });
-
-  @override
-  List<Object?> get props =>
-      [id, inventoryId, name, barcode, price, quantity, category, brand];
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'inventoryId': inventoryId,
-      'name': name,
-      'barcode': barcode,
-      'price': price,
-      'quantity': quantity,
-      'category': category,
-      'brand': brand,
-    };
-  }
 
   factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
@@ -49,5 +30,18 @@ class Product extends Equatable {
       category: map['category'],
       brand: map['brand'],
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'inventoryId': inventoryId,
+      'name': name,
+      'barcode': barcode,
+      'price': price,
+      'quantity': quantity,
+      'category': category,
+      'brand': brand,
+    };
   }
 }

@@ -1,32 +1,25 @@
-import 'package:equatable/equatable.dart';
-
-class Inventory extends Equatable {
+class Inventory {
   final String id;
   final String name;
-  final String? description;
 
-  const Inventory({
+  Inventory({
     required this.id,
     required this.name,
-    this.description,
   });
-
-  @override
-  List<Object?> get props => [id, name, description];
-
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-    };
-  }
 
   factory Inventory.fromMap(Map<String, dynamic> map) {
     return Inventory(
       id: map['id'],
       name: map['name'],
-      description: map['description'],
     );
+  }
+
+  get description => null;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+    };
   }
 }

@@ -9,5 +9,5 @@ abstract class InventoryRepository {
   Future<void> updateInventory(Inventory inventory);
   Future<void> updateProduct(Product product);
   Future<void> deleteInventory(String inventoryId);
-  Future<void> deleteProduct(String productId);
+  Future<void> deleteProduct(String productId, String inventoryId);
 }

@@ -33,9 +33,95 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     required this.deleteProduct,
     required this.updateInventory,
     required this.updateProduct,
-  }) : super(InventoryInitial());
+  }) : super(InventoryInitial()) {
+    on<LoadInventories>(_onLoadInventories);
+    on<LoadProducts>(_onLoadProducts);
+    on<AddInventoryEvent>(_onAddInventory);
+    on<AddProductEvent>(_onAddProduct);
+    on<DeleteInventoryEvent>(_onDeleteInventory);
+    on<DeleteProductEvent>(_onDeleteProduct);
+    on<UpdateInventoryEvent>(_onUpdateInventory);
+    on<UpdateProductEvent>(_onUpdateProduct);
+  }
 
-  Stream<InventoryState> mapEventToState(InventoryEvent event) async* {
-    // Implementación de eventos a estados
+  void _onLoadInventories(
+      LoadInventories event, Emitter<InventoryState> emit) async {
+    emit(InventoryLoading());
+    try {
+      final inventories = await getInventories();
+      emit(InventoryLoaded(inventories, []));
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onLoadProducts(LoadProducts event, Emitter<InventoryState> emit) async {
+    emit(InventoryLoading());
+    try {
+      final products = await getProducts(event.inventoryId);
+      emit(InventoryLoaded([], products));
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onAddInventory(
+      AddInventoryEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await addInventory(event.inventory);
+      add(LoadInventories());
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onAddProduct(
+      AddProductEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await addProduct(event.product);
+      add(LoadProducts(event.product.inventoryId));
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onDeleteInventory(
+      DeleteInventoryEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await deleteInventory(event.inventoryId);
+      add(LoadInventories());
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onDeleteProduct(
+      DeleteProductEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await deleteProduct(event.productId, event.inventoryId);
+      add(LoadProducts(event.inventoryId));
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onUpdateInventory(
+      UpdateInventoryEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await updateInventory(event.inventory);
+      add(LoadInventories());
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
+  }
+
+  void _onUpdateProduct(
+      UpdateProductEvent event, Emitter<InventoryState> emit) async {
+    try {
+      await updateProduct(event.product);
+      add(LoadProducts(event.product.inventoryId));
+    } catch (e) {
+      emit(InventoryError(e.toString()));
+    }
   }
 }
