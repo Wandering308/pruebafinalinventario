@@ -49,13 +49,24 @@ class InventoryListPage extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => ProductListPage(
-                            inventoryId: inventory
-                                .id), // Navegar a la página de productos
+                          inventoryId: inventory.id,
+                        ), // Navegar a la página de productos
                       ),
                     ).then((_) {
                       // Recargar inventarios al regresar a la pantalla principal
                       context.read<InventoryBloc>().add(LoadInventories());
                     });
+                  },
+                  onDelete: () {
+                    context
+                        .read<InventoryBloc>()
+                        .add(DeleteInventoryEvent(inventory.id));
+                  },
+                  onLongPress: () {
+                    // Lógica para eliminar el inventario al mantener presionado
+                    context
+                        .read<InventoryBloc>()
+                        .add(DeleteInventoryEvent(inventory.id));
                   },
                 );
               },

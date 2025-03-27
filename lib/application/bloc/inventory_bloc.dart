@@ -1,20 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
-import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
-
-import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
-
-import 'package:inventario_app_finish/domain/usecases/get_inventories.dart';
-import 'package:inventario_app_finish/domain/usecases/get_products.dart';
 import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/add_product.dart';
 import 'package:inventario_app_finish/domain/usecases/delete_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/delete_product.dart';
+import 'package:inventario_app_finish/domain/usecases/get_inventories.dart';
+import 'package:inventario_app_finish/domain/usecases/get_products.dart';
 import 'package:inventario_app_finish/domain/usecases/update_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/update_product.dart';
+import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
+import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
+import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
+import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
 
 class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   final DatabaseHelper databaseHelper;
@@ -131,7 +129,9 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     try {
       await deleteProduct(event.productId, event.inventoryId);
       final products = await localStorage.loadProducts();
-      products.removeWhere((product) => product.id == event.productId);
+      products.removeWhere((product) =>
+          product.id == event.productId &&
+          product.inventoryId == event.inventoryId);
       await localStorage.saveProducts(products);
       add(LoadProducts(event.inventoryId));
     } catch (e) {
@@ -144,12 +144,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     try {
       await updateInventory(event.inventory);
       final inventories = await localStorage.loadInventories();
-      final index =
-          inventories.indexWhere((inv) => inv.id == event.inventory.id);
+      int index = inventories.indexWhere((inv) => inv.id == event.inventory.id);
       if (index != -1) {
         inventories[index] = event.inventory;
-        await localStorage.saveInventories(inventories);
       }
+      await localStorage.saveInventories(inventories);
       add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -161,11 +160,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     try {
       await updateProduct(event.product);
       final products = await localStorage.loadProducts();
-      final index = products.indexWhere((prod) => prod.id == event.product.id);
+      int index = products.indexWhere((prod) => prod.id == event.product.id);
       if (index != -1) {
         products[index] = event.product;
-        await localStorage.saveProducts(products);
       }
+      await localStorage.saveProducts(products);
       add(LoadProducts(event.product.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));

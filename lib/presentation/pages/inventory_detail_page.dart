@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
+import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/add_product.dart';
 import 'package:inventario_app_finish/domain/usecases/delete_inventory.dart';
@@ -12,8 +13,8 @@ import 'package:inventario_app_finish/domain/usecases/get_products.dart';
 import 'package:inventario_app_finish/domain/usecases/update_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/update_product.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
+
+import 'package:inventario_app_finish/infrastructure/datasources/local_storage_impl.dart';
 import 'package:inventario_app_finish/presentation/widgets/product_list_item.dart';
 
 class InventoryDetailPage extends StatelessWidget {
@@ -43,15 +44,18 @@ class InventoryDetailPage extends StatelessWidget {
           databaseHelper: DatabaseHelper(),
           localStorage:
               LocalStorageImpl(), // Asegúrate de usar la implementación correcta
-          getInventories: GetInventories(),
-          getProducts: GetProducts(),
-          addInventory: AddInventory(),
-          addProduct: AddProduct(),
-          deleteInventory: DeleteInventory(),
-          deleteProduct: DeleteProduct(),
-          updateInventory: UpdateInventory(),
-          updateProduct: UpdateProduct(),
-        )..add(LoadInventoryEvent(inventoryId)),
+          getInventories:
+              GetInventories(DatabaseHelper() as InventoryRepository),
+          getProducts: GetProducts(DatabaseHelper() as InventoryRepository),
+          addInventory: AddInventory(DatabaseHelper() as InventoryRepository),
+          addProduct: AddProduct(DatabaseHelper() as InventoryRepository),
+          deleteInventory:
+              DeleteInventory(DatabaseHelper() as InventoryRepository),
+          deleteProduct: DeleteProduct(DatabaseHelper() as InventoryRepository),
+          updateInventory:
+              UpdateInventory(DatabaseHelper() as InventoryRepository),
+          updateProduct: UpdateProduct(DatabaseHelper() as InventoryRepository),
+        )..add(LoadProducts(inventoryId)),
         child: BlocBuilder<InventoryBloc, InventoryState>(
           builder: (context, state) {
             if (state is InventoryLoading) {

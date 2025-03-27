@@ -4,19 +4,27 @@ import 'package:inventario_app_finish/domain/entities/inventory.dart';
 class InventoryListItem extends StatelessWidget {
   final Inventory inventory;
   final VoidCallback onTap;
+  final VoidCallback onDelete;
+  final VoidCallback onLongPress;
 
   const InventoryListItem({
-    super.key,
+    Key? key,
     required this.inventory,
     required this.onTap,
-  });
+    required this.onDelete,
+    required this.onLongPress,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(inventory.name),
-      subtitle: Text(inventory.description ?? 'Sin descripción'),
       onTap: onTap,
+      onLongPress: onLongPress,
+      trailing: IconButton(
+        icon: Icon(Icons.delete),
+        onPressed: onDelete,
+      ),
     );
   }
 }
