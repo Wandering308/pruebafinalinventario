@@ -16,6 +16,9 @@ class _AddProductPageState extends State<AddProductPage> {
   final nameController = TextEditingController();
   final quantityController = TextEditingController();
   final priceController = TextEditingController();
+  final barcodeController = TextEditingController();
+  final categoryController = TextEditingController();
+  final brandController = TextEditingController();
   bool _isLoading = false;
   DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -85,6 +88,30 @@ class _AddProductPageState extends State<AddProductPage> {
                         return null;
                       },
                     ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: barcodeController,
+                      decoration: InputDecoration(
+                        labelText: 'Código de Barras',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: categoryController,
+                      decoration: InputDecoration(
+                        labelText: 'Categoría',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: brandController,
+                      decoration: InputDecoration(
+                        labelText: 'Marca',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                     SizedBox(height: 24.0),
                     ElevatedButton(
                       onPressed: _saveProduct,
@@ -118,6 +145,9 @@ class _AddProductPageState extends State<AddProductPage> {
           name: nameController.text,
           quantity: int.parse(quantityController.text),
           price: double.parse(priceController.text),
+          barcode: barcodeController.text,
+          category: categoryController.text,
+          brand: brandController.text,
           inventoryId:
               widget.inventoryId, // Usa el ID del inventario del widget
         );
@@ -166,6 +196,9 @@ class _AddProductPageState extends State<AddProductPage> {
     nameController.dispose();
     quantityController.dispose();
     priceController.dispose();
+    barcodeController.dispose();
+    categoryController.dispose();
+    brandController.dispose();
     super.dispose();
   }
 }

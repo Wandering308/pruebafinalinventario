@@ -11,15 +11,6 @@ abstract class InventoryEvent extends Equatable {
 
 class LoadInventories extends InventoryEvent {}
 
-class LoadProducts extends InventoryEvent {
-  final String inventoryId;
-
-  const LoadProducts(this.inventoryId);
-
-  @override
-  List<Object> get props => [inventoryId];
-}
-
 class AddInventoryEvent extends InventoryEvent {
   final Inventory inventory;
 
@@ -27,34 +18,6 @@ class AddInventoryEvent extends InventoryEvent {
 
   @override
   List<Object> get props => [inventory];
-}
-
-class AddProductEvent extends InventoryEvent {
-  final Product product;
-
-  const AddProductEvent(this.product);
-
-  @override
-  List<Object> get props => [product];
-}
-
-class DeleteInventoryEvent extends InventoryEvent {
-  final String inventoryId;
-
-  const DeleteInventoryEvent(this.inventoryId);
-
-  @override
-  List<Object> get props => [inventoryId];
-}
-
-class DeleteProductEvent extends InventoryEvent {
-  final String productId;
-  final String inventoryId;
-
-  const DeleteProductEvent(this.productId, this.inventoryId);
-
-  @override
-  List<Object> get props => [productId, inventoryId];
 }
 
 class UpdateInventoryEvent extends InventoryEvent {
@@ -66,6 +29,33 @@ class UpdateInventoryEvent extends InventoryEvent {
   List<Object> get props => [inventory];
 }
 
+class DeleteInventoryEvent extends InventoryEvent {
+  final String inventoryId;
+
+  const DeleteInventoryEvent(this.inventoryId);
+
+  @override
+  List<Object> get props => [inventoryId];
+}
+
+class LoadProducts extends InventoryEvent {
+  final String inventoryId;
+
+  const LoadProducts(this.inventoryId);
+
+  @override
+  List<Object> get props => [inventoryId];
+}
+
+class AddProductEvent extends InventoryEvent {
+  final Product product;
+
+  const AddProductEvent(this.product);
+
+  @override
+  List<Object> get props => [product];
+}
+
 class UpdateProductEvent extends InventoryEvent {
   final Product product;
 
@@ -73,4 +63,14 @@ class UpdateProductEvent extends InventoryEvent {
 
   @override
   List<Object> get props => [product];
+}
+
+class DeleteProductEvent extends InventoryEvent {
+  final String productId;
+  final String inventoryId;
+
+  const DeleteProductEvent(this.productId, this.inventoryId);
+
+  @override
+  List<Object> get props => [productId, inventoryId];
 }

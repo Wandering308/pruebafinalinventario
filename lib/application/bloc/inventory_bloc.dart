@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
-import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/add_product.dart';
 import 'package:inventario_app_finish/domain/usecases/delete_inventory.dart';
@@ -12,10 +11,11 @@ import 'package:inventario_app_finish/domain/usecases/update_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/update_product.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
+import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
 
 class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
-  final InventoryRepository databaseHelper;
+  final DatabaseHelper databaseHelper;
   final LocalStorage localStorage;
   final GetInventories getInventories;
   final GetProducts getProducts;
@@ -52,7 +52,7 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       LoadInventories event, Emitter<InventoryState> emit) async {
     emit(InventoryLoading());
     try {
-      final inventories = await databaseHelper.getInventories();
+      final inventories = await localStorage.loadInventories();
 
       // Obtener el estado actual y mantener la lista de productos
       final currentState = state;
@@ -70,7 +70,7 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onLoadProducts(LoadProducts event, Emitter<InventoryState> emit) async {
     emit(InventoryLoading());
     try {
-      final products = await databaseHelper.getProducts(event.inventoryId);
+      final products = await localStorage.loadProducts();
 
       // Obtener el estado actual y mantener la lista de inventarios
       final currentState = state;
@@ -88,9 +88,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onAddInventory(
       AddInventoryEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.addInventory(event.inventory);
-      final inventories = await databaseHelper.getInventories();
-      emit(InventoryLoaded(inventories, []));
+      await addInventory(event.inventory);
+      final inventories = await localStorage.loadInventories();
+      inventories.add(event.inventory);
+      await localStorage.saveInventories(inventories);
+      add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
@@ -99,15 +101,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onAddProduct(
       AddProductEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.addProduct(event.product);
-      final products =
-          await databaseHelper.getProducts(event.product.inventoryId);
-      final currentState = state;
-      List<Inventory> currentInventories = [];
-      if (currentState is InventoryLoaded) {
-        currentInventories = currentState.inventories;
-      }
-      emit(InventoryLoaded(currentInventories, products));
+      await addProduct(event.product);
+      final products = await localStorage.loadProducts();
+      products.add(event.product);
+      await localStorage.saveProducts(products);
+      add(LoadProducts(event.product.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
@@ -116,10 +114,12 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onDeleteInventory(
       DeleteInventoryEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.deleteInventory(event.inventoryId);
-      final inventories = await databaseHelper.getInventories();
+      await deleteInventory(event.inventoryId);
+      final inventories = await localStorage.loadInventories();
+      inventories.removeWhere((inventory) => inventory.id == event.inventoryId);
+      await localStorage.saveInventories(inventories);
       emit(InventoryDeleted());
-      emit(InventoryLoaded(inventories, []));
+      add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
@@ -128,14 +128,13 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onDeleteProduct(
       DeleteProductEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.deleteProduct(event.productId, event.inventoryId);
-      final products = await databaseHelper.getProducts(event.inventoryId);
-      final currentState = state;
-      List<Inventory> currentInventories = [];
-      if (currentState is InventoryLoaded) {
-        currentInventories = currentState.inventories;
-      }
-      emit(InventoryLoaded(currentInventories, products));
+      await deleteProduct(event.productId, event.inventoryId);
+      final products = await localStorage.loadProducts();
+      products.removeWhere((product) =>
+          product.id == event.productId &&
+          product.inventoryId == event.inventoryId);
+      await localStorage.saveProducts(products);
+      add(LoadProducts(event.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
@@ -144,9 +143,14 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onUpdateInventory(
       UpdateInventoryEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.updateInventory(event.inventory);
-      final inventories = await databaseHelper.getInventories();
-      emit(InventoryLoaded(inventories, []));
+      await updateInventory(event.inventory);
+      final inventories = await localStorage.loadInventories();
+      int index = inventories.indexWhere((inv) => inv.id == event.inventory.id);
+      if (index != -1) {
+        inventories[index] = event.inventory;
+      }
+      await localStorage.saveInventories(inventories);
+      add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
@@ -155,19 +159,16 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   void _onUpdateProduct(
       UpdateProductEvent event, Emitter<InventoryState> emit) async {
     try {
-      await databaseHelper.updateProduct(event.product);
-      final products =
-          await databaseHelper.getProducts(event.product.inventoryId);
-      final currentState = state;
-      List<Inventory> currentInventories = [];
-      if (currentState is InventoryLoaded) {
-        currentInventories = currentState.inventories;
+      await updateProduct(event.product);
+      final products = await localStorage.loadProducts();
+      int index = products.indexWhere((prod) => prod.id == event.product.id);
+      if (index != -1) {
+        products[index] = event.product;
       }
-      emit(InventoryLoaded(currentInventories, products));
+      await localStorage.saveProducts(products);
+      add(LoadProducts(event.product.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
   }
 }
-
-class InventoryDeleted extends InventoryState {}

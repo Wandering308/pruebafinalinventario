@@ -31,3 +31,5 @@ class InventoryError extends InventoryState {
   @override
   List<Object> get props => [message];
 }
+
+class InventoryDeleted extends InventoryState {}

@@ -1,4 +1,3 @@
-// Asegúrate de importar `product.dart` y otros archivos necesarios
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';

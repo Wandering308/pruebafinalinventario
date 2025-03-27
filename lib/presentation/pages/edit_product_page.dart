@@ -16,6 +16,9 @@ class _EditProductPageState extends State<EditProductPage> {
   late TextEditingController nameController;
   late TextEditingController quantityController;
   late TextEditingController priceController;
+  late TextEditingController barcodeController;
+  late TextEditingController categoryController;
+  late TextEditingController brandController;
   bool _isLoading = false;
   DatabaseHelper databaseHelper = DatabaseHelper();
 
@@ -27,6 +30,11 @@ class _EditProductPageState extends State<EditProductPage> {
         TextEditingController(text: widget.product.quantity.toString());
     priceController =
         TextEditingController(text: widget.product.price.toString());
+    barcodeController =
+        TextEditingController(text: widget.product.barcode ?? '');
+    categoryController =
+        TextEditingController(text: widget.product.category ?? '');
+    brandController = TextEditingController(text: widget.product.brand ?? '');
   }
 
   @override
@@ -95,6 +103,30 @@ class _EditProductPageState extends State<EditProductPage> {
                         return null;
                       },
                     ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: barcodeController,
+                      decoration: InputDecoration(
+                        labelText: 'Código de Barras',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: categoryController,
+                      decoration: InputDecoration(
+                        labelText: 'Categoría',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    TextFormField(
+                      controller: brandController,
+                      decoration: InputDecoration(
+                        labelText: 'Marca',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                     SizedBox(height: 24.0),
                     ElevatedButton(
                       onPressed: _updateProduct,
@@ -129,9 +161,9 @@ class _EditProductPageState extends State<EditProductPage> {
           price: double.parse(priceController.text),
           inventoryId:
               widget.product.inventoryId, // Preserve the original inventoryId
-          barcode: widget.product.barcode, // Preserve the original barcode
-          category: widget.product.category, // Preserve the original category
-          brand: widget.product.brand, // Preserve the original brand
+          barcode: barcodeController.text,
+          category: categoryController.text,
+          brand: brandController.text,
         );
 
         // Update the product in the database
@@ -178,6 +210,9 @@ class _EditProductPageState extends State<EditProductPage> {
     nameController.dispose();
     quantityController.dispose();
     priceController.dispose();
+    barcodeController.dispose();
+    categoryController.dispose();
+    brandController.dispose();
     super.dispose();
   }
 }
