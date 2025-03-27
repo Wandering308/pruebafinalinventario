@@ -1,7 +1,7 @@
 class Inventory {
   final String id;
   final String name;
-  final String? description;
+  final String? description; // Agregar descripción si aplica
 
   Inventory({
     required this.id,

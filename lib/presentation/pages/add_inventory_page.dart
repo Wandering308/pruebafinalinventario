@@ -37,8 +37,7 @@ class AddInventoryPage extends StatelessWidget {
                     final newInventory = Inventory(
                       id: DateTime.now().toString(), // Genera un ID único
                       name: _nameController.text,
-                      description:
-                          null, // Añade una descripción si es necesario
+                      description: '', // Añade una descripción si es necesario
                     );
                     context.read<InventoryBloc>().add(
                           AddInventoryEvent(newInventory),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
@@ -15,8 +16,24 @@ import 'package:inventario_app_finish/domain/usecases/update_product.dart';
 import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
 import 'package:inventario_app_finish/presentation/pages/inventory_list_page.dart';
 
+// Importar sqflite_common_ffi
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+
 void main() {
+  // Inicializar databaseFactory para plataformas que no sean móviles
+  if (isDesktopOrWeb()) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+
   runApp(MyApp());
+}
+
+bool isDesktopOrWeb() {
+  return (defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.macOS ||
+      kIsWeb);
 }
 
 class MyApp extends StatelessWidget {

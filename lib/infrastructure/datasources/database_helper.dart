@@ -7,7 +7,6 @@ import 'package:inventario_app_finish/domain/repositories/inventory_repository.d
 class DatabaseHelper implements InventoryRepository {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
-
   DatabaseHelper._internal();
 
   static Database? _database;
@@ -19,8 +18,8 @@ class DatabaseHelper implements InventoryRepository {
   }
 
   Future<Database> _initDatabase() async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'inventory.db');
+    final databasePath = await getDatabasesPath();
+    final path = join(databasePath, 'inventario.db');
 
     return await openDatabase(
       path,
@@ -37,6 +36,7 @@ class DatabaseHelper implements InventoryRepository {
         description TEXT
       )
     ''');
+
     await db.execute('''
       CREATE TABLE products(
         id TEXT PRIMARY KEY,
@@ -53,58 +53,88 @@ class DatabaseHelper implements InventoryRepository {
   }
 
   @override
+  Future<void> insertInventory(Inventory inventory) async {
+    final db = await database;
+    await db.insert('inventories', inventory.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  @override
+  Future<void> insertProduct(Product product) async {
+    final db = await database;
+    await db.insert('products', product.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  @override
   Future<List<Inventory>> getInventories() async {
     final db = await database;
-    final result = await db.query('inventories');
-    return result.map((json) => Inventory.fromJson(json)).toList();
+    final List<Map<String, dynamic>> maps = await db.query('inventories');
+    return List.generate(maps.length, (i) {
+      return Inventory.fromMap(maps[i]);
+    });
   }
 
   @override
   Future<List<Product>> getProducts(String inventoryId) async {
     final db = await database;
-    final result = await db
-        .query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
-    return result.map((json) => Product.fromJson(json)).toList();
-  }
-
-  @override
-  Future<void> addInventory(Inventory inventory) async {
-    final db = await database;
-    await db.insert('inventories', Inventory.toJson(inventory));
-  }
-
-  @override
-  Future<void> addProduct(Product product) async {
-    final db = await database;
-    await db.insert('products', Product.toJson(product));
-  }
-
-  @override
-  Future<void> deleteInventory(String id) async {
-    final db = await database;
-    await db.delete('inventories', where: 'id = ?', whereArgs: [id]);
-    await db.delete('products', where: 'inventoryId = ?', whereArgs: [id]);
-  }
-
-  @override
-  Future<void> deleteProduct(String productId, String inventoryId) async {
-    final db = await database;
-    await db.delete('products',
-        where: 'id = ? AND inventoryId = ?',
-        whereArgs: [productId, inventoryId]);
+    final List<Map<String, dynamic>> maps = await db.query(
+      'products',
+      where: 'inventoryId = ?',
+      whereArgs: [inventoryId],
+    );
+    return List.generate(maps.length, (i) {
+      return Product.fromMap(maps[i]);
+    });
   }
 
   @override
   Future<void> updateInventory(Inventory inventory) async {
     final db = await database;
-    await db.update('inventories', Inventory.toJson(inventory),
-        where: 'id = ?', whereArgs: [inventory.id]);
+    await db.update(
+      'inventories',
+      inventory.toMap(),
+      where: 'id = ?',
+      whereArgs: [inventory.id],
+    );
   }
 
   @override
   Future<void> updateProduct(Product product) async {
     final db = await database;
-    await db.update('products', Product.toJson(product),
-        where: 'id = ?', whereArgs: [product.id]);
+    await db.update(
+      'products',
+      product.toMap(),
+      where: 'id = ?',
+      whereArgs: [product.id],
+    );
+  }
+
+  @override
+  Future<void> deleteInventory(String id) async {
+    final db = await database;
+    await db.delete(
+      'inventories',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  @override
+  Future<void> deleteProduct(String id, String inventoryId) async {
+    final db = await database;
+    await db.delete(
+      'products',
+      where: 'id = ? AND inventoryId = ?',
+      whereArgs: [id, inventoryId],
+    );
+  }
+
+  Future<void> addInventory(Inventory inventory) async {
+    await insertInventory(inventory);
+  }
+
+  Future<void> addProduct(Product product) async {
+    await insertProduct(product);
   }
 }

@@ -30,11 +30,9 @@ class _EditProductPageState extends State<EditProductPage> {
         TextEditingController(text: widget.product.quantity.toString());
     priceController =
         TextEditingController(text: widget.product.price.toString());
-    barcodeController =
-        TextEditingController(text: widget.product.barcode ?? '');
-    categoryController =
-        TextEditingController(text: widget.product.category ?? '');
-    brandController = TextEditingController(text: widget.product.brand ?? '');
+    barcodeController = TextEditingController(text: widget.product.barcode);
+    categoryController = TextEditingController(text: widget.product.category);
+    brandController = TextEditingController(text: widget.product.brand);
   }
 
   @override

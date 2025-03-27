@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
@@ -13,6 +14,7 @@ import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
+import 'package:inventario_app_finish/infrastructure/datasources/shared_preferences_helper.dart';
 
 class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
   final DatabaseHelper databaseHelper;
@@ -54,6 +56,12 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     try {
       final inventories = await localStorage.loadInventories();
 
+      // Serializar inventarios a JSON y guardarlos en shared_preferences
+      final inventoryJsonList =
+          inventories.map((inv) => jsonEncode(Inventory.toJson(inv))).toList();
+      await SharedPreferencesHelper.saveStringList(
+          'inventories', inventoryJsonList);
+
       // Obtener el estado actual y mantener la lista de productos
       final currentState = state;
       List<Product> currentProducts = [];
@@ -71,6 +79,11 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     emit(InventoryLoading());
     try {
       final products = await localStorage.loadProducts();
+
+      // Serializar productos a JSON y guardarlos en shared_preferences
+      final productJsonList =
+          products.map((prod) => jsonEncode(Product.toJson(prod))).toList();
+      await SharedPreferencesHelper.saveStringList('products', productJsonList);
 
       // Obtener el estado actual y mantener la lista de inventarios
       final currentState = state;
@@ -92,6 +105,13 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       final inventories = await localStorage.loadInventories();
       inventories.add(event.inventory);
       await localStorage.saveInventories(inventories);
+
+      // Serializar inventarios a JSON y guardarlos en shared_preferences
+      final inventoryJsonList =
+          inventories.map((inv) => jsonEncode(Inventory.toJson(inv))).toList();
+      await SharedPreferencesHelper.saveStringList(
+          'inventories', inventoryJsonList);
+
       add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -105,6 +125,12 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       final products = await localStorage.loadProducts();
       products.add(event.product);
       await localStorage.saveProducts(products);
+
+      // Serializar productos a JSON y guardarlos en shared_preferences
+      final productJsonList =
+          products.map((prod) => jsonEncode(Product.toJson(prod))).toList();
+      await SharedPreferencesHelper.saveStringList('products', productJsonList);
+
       add(LoadProducts(event.product.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -118,6 +144,13 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
       final inventories = await localStorage.loadInventories();
       inventories.removeWhere((inventory) => inventory.id == event.inventoryId);
       await localStorage.saveInventories(inventories);
+
+      // Serializar inventarios a JSON y guardarlos en shared_preferences
+      final inventoryJsonList =
+          inventories.map((inv) => jsonEncode(Inventory.toJson(inv))).toList();
+      await SharedPreferencesHelper.saveStringList(
+          'inventories', inventoryJsonList);
+
       emit(InventoryDeleted());
       add(LoadInventories());
     } catch (e) {
@@ -134,6 +167,12 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
           product.id == event.productId &&
           product.inventoryId == event.inventoryId);
       await localStorage.saveProducts(products);
+
+      // Serializar productos a JSON y guardarlos en shared_preferences
+      final productJsonList =
+          products.map((prod) => jsonEncode(Product.toJson(prod))).toList();
+      await SharedPreferencesHelper.saveStringList('products', productJsonList);
+
       add(LoadProducts(event.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -150,6 +189,13 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
         inventories[index] = event.inventory;
       }
       await localStorage.saveInventories(inventories);
+
+      // Serializar inventarios a JSON y guardarlos en shared_preferences
+      final inventoryJsonList =
+          inventories.map((inv) => jsonEncode(Inventory.toJson(inv))).toList();
+      await SharedPreferencesHelper.saveStringList(
+          'inventories', inventoryJsonList);
+
       add(LoadInventories());
     } catch (e) {
       emit(InventoryError(e.toString()));
@@ -166,6 +212,12 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
         products[index] = event.product;
       }
       await localStorage.saveProducts(products);
+
+      // Serializar productos a JSON y guardarlos en shared_preferences
+      final productJsonList =
+          products.map((prod) => jsonEncode(Product.toJson(prod))).toList();
+      await SharedPreferencesHelper.saveStringList('products', productJsonList);
+
       add(LoadProducts(event.product.inventoryId));
     } catch (e) {
       emit(InventoryError(e.toString()));

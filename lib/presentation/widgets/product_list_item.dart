@@ -11,7 +11,7 @@ class ProductListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(product.name),
-      subtitle: Text('Código de barras: ${product.barcode ?? ''}'),
+      subtitle: Text('Código de barras: ${product.barcode}'),
       trailing: Text('Precio: \$${product.price}'),
     );
   }

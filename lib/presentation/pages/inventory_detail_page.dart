@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
+import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/add_product.dart';
 import 'package:inventario_app_finish/domain/usecases/delete_inventory.dart';
@@ -40,14 +41,19 @@ class InventoryDetailPage extends StatelessWidget {
       body: BlocProvider(
         create: (context) => InventoryBloc(
           localStorage: LocalStorageImpl(),
-          getInventories: GetInventories(DatabaseHelper()),
-          getProducts: GetProducts(DatabaseHelper()),
-          addInventory: AddInventory(DatabaseHelper()),
-          addProduct: AddProduct(DatabaseHelper()),
-          deleteInventory: DeleteInventory(DatabaseHelper()),
-          deleteProduct: DeleteProduct(DatabaseHelper()),
-          updateInventory: UpdateInventory(DatabaseHelper()),
-          updateProduct: UpdateProduct(DatabaseHelper()),
+          getInventories:
+              GetInventories(LocalStorageImpl() as InventoryRepository),
+          getProducts: GetProducts(LocalStorageImpl() as InventoryRepository),
+          addInventory: AddInventory(LocalStorageImpl() as InventoryRepository),
+          addProduct: AddProduct(LocalStorageImpl() as InventoryRepository),
+          deleteInventory:
+              DeleteInventory(LocalStorageImpl() as InventoryRepository),
+          deleteProduct:
+              DeleteProduct(LocalStorageImpl() as InventoryRepository),
+          updateInventory:
+              UpdateInventory(LocalStorageImpl() as InventoryRepository),
+          updateProduct:
+              UpdateProduct(LocalStorageImpl() as InventoryRepository),
           databaseHelper: DatabaseHelper(),
         )..add(LoadProducts(inventoryId)),
         child: BlocBuilder<InventoryBloc, InventoryState>(

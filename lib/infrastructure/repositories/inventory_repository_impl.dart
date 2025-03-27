@@ -13,7 +13,6 @@ class InventoryRepositoryImpl implements InventoryRepository {
     return await localStorage.loadInventories();
   }
 
-  @override
   Future<void> addInventory(Inventory inventory) async {
     List<Inventory> inventories = await localStorage.loadInventories();
     inventories.add(inventory);
@@ -45,7 +44,6 @@ class InventoryRepositoryImpl implements InventoryRepository {
         .toList();
   }
 
-  @override
   Future<void> addProduct(Product product) async {
     List<Product> products = await localStorage.loadProducts();
     products.add(product);
@@ -68,5 +66,17 @@ class InventoryRepositoryImpl implements InventoryRepository {
       products[index] = product;
       await localStorage.saveProducts(products);
     }
+  }
+
+  @override
+  Future<void> insertInventory(Inventory inventory) {
+    // TODO: implement insertInventory
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> insertProduct(Product product) {
+    // TODO: implement insertProduct
+    throw UnimplementedError();
   }
 }

@@ -16,6 +16,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+
+  sqflite_common_ffi: ^2.0.0
+
+
   # Dependencias principales
   flutter_bloc: ^9.1.0  # Para manejar el estado con BLoC
   equatable: ^2.0.7     # Para comparar objetos de manera eficiente

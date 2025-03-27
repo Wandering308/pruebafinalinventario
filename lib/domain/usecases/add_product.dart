@@ -1,5 +1,5 @@
-import '../entities/product.dart';
-import '../repositories/inventory_repository.dart';
+import 'package:inventario_app_finish/domain/entities/product.dart';
+import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 
 class AddProduct {
   final InventoryRepository repository;
@@ -7,6 +7,6 @@ class AddProduct {
   AddProduct(this.repository);
 
   Future<void> call(Product product) async {
-    return await repository.addProduct(product);
+    await repository.insertProduct(product);
   }
 }
