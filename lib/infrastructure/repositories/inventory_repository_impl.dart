@@ -1,6 +1,6 @@
-import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
+import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
 
 class InventoryRepositoryImpl implements InventoryRepository {
@@ -14,31 +14,23 @@ class InventoryRepositoryImpl implements InventoryRepository {
   }
 
   @override
-  Future<List<Product>> getProducts(String inventoryId) async {
-    final products = await localStorage.loadProducts();
-    return products
-        .where((product) => product.inventoryId == inventoryId)
-        .toList();
-  }
-
-  @override
   Future<void> addInventory(Inventory inventory) async {
-    final inventories = await localStorage.loadInventories();
+    List<Inventory> inventories = await localStorage.loadInventories();
     inventories.add(inventory);
     await localStorage.saveInventories(inventories);
   }
 
   @override
-  Future<void> addProduct(Product product) async {
-    final products = await localStorage.loadProducts();
-    products.add(product);
-    await localStorage.saveProducts(products);
+  Future<void> deleteInventory(String id) async {
+    List<Inventory> inventories = await localStorage.loadInventories();
+    inventories.removeWhere((inventory) => inventory.id == id);
+    await localStorage.saveInventories(inventories);
   }
 
   @override
   Future<void> updateInventory(Inventory inventory) async {
-    final inventories = await localStorage.loadInventories();
-    final index = inventories.indexWhere((inv) => inv.id == inventory.id);
+    List<Inventory> inventories = await localStorage.loadInventories();
+    int index = inventories.indexWhere((inv) => inv.id == inventory.id);
     if (index != -1) {
       inventories[index] = inventory;
       await localStorage.saveInventories(inventories);
@@ -46,27 +38,40 @@ class InventoryRepositoryImpl implements InventoryRepository {
   }
 
   @override
-  Future<void> updateProduct(Product product) async {
-    final products = await localStorage.loadProducts();
-    final index = products.indexWhere((prod) => prod.id == product.id);
-    if (index != -1) {
-      products[index] = product;
-      await localStorage.saveProducts(products);
-    }
+  Future<List<Product>> getProducts(String inventoryId) async {
+    List<Product> products = await localStorage.loadProducts();
+    return products
+        .where((product) => product.inventoryId == inventoryId)
+        .toList();
   }
 
   @override
-  Future<void> deleteInventory(String inventoryId) async {
-    final inventories = await localStorage.loadInventories();
-    inventories.removeWhere((inv) => inv.id == inventoryId);
-    await localStorage.saveInventories(inventories);
+  Future<void> addProduct(Product product) async {
+    List<Product> products = await localStorage.loadProducts();
+    products.add(product);
+    await localStorage.saveProducts(products);
   }
 
   @override
   Future<void> deleteProduct(String inventoryId, String productId) async {
-    final products = await localStorage.loadProducts();
-    products.removeWhere(
-        (prod) => prod.inventoryId == inventoryId && prod.id == productId);
+    // Cargar la lista de productos desde el almacenamiento local
+    List<Product> products = await localStorage.loadProducts();
+
+    // Eliminar el producto con el ID especificado y el inventoryId correspondiente
+    products.removeWhere((product) =>
+        product.id == productId && product.inventoryId == inventoryId);
+
+    // Guardar la lista actualizada de productos en el almacenamiento local
     await localStorage.saveProducts(products);
+  }
+
+  @override
+  Future<void> updateProduct(Product product) async {
+    List<Product> products = await localStorage.loadProducts();
+    int index = products.indexWhere((prod) => prod.id == product.id);
+    if (index != -1) {
+      products[index] = product;
+      await localStorage.saveProducts(products);
+    }
   }
 }

@@ -48,6 +48,11 @@ class AddProductPage extends StatelessWidget {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese un precio';
                   }
+                  try {
+                    double.parse(value);
+                  } catch (e) {
+                    return 'Por favor ingrese un precio válido';
+                  }
                   return null;
                 },
               ),
@@ -58,6 +63,11 @@ class AddProductPage extends StatelessWidget {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese una cantidad';
+                  }
+                  try {
+                    int.parse(value);
+                  } catch (e) {
+                    return 'Por favor ingrese una cantidad válida';
                   }
                   return null;
                 },

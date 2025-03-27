@@ -45,6 +45,7 @@ Future<void> setup() async {
   // Bloc
   getIt.registerLazySingleton(() => InventoryBloc(
         databaseHelper: getIt<DatabaseHelper>(),
+        localStorage: getIt<LocalStorage>(),
         getInventories: getIt<GetInventories>(),
         getProducts: getIt<GetProducts>(),
         addInventory: getIt<AddInventory>(),
