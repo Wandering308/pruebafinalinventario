@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
+import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
-
 import 'package:inventario_app_finish/domain/usecases/get_inventories.dart';
 import 'package:inventario_app_finish/domain/usecases/get_products.dart';
 import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
@@ -59,7 +59,15 @@ class InventoryBloc extends Bloc<InventoryEvent, InventoryState> {
     emit(InventoryLoading());
     try {
       final products = await getProducts(event.inventoryId);
-      emit(InventoryLoaded([], products));
+
+      // Obtener el estado actual y mantener la lista de inventarios
+      final currentState = state;
+      List<Inventory> currentInventories = [];
+      if (currentState is InventoryLoaded) {
+        currentInventories = currentState.inventories;
+      }
+
+      emit(InventoryLoaded(currentInventories, products));
     } catch (e) {
       emit(InventoryError(e.toString()));
     }
