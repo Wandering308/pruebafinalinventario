@@ -31,8 +31,7 @@ class _ProductListPageState extends State<ProductListPage> {
 
     try {
       // Get products from the specific inventory
-      var products =
-          await databaseHelper.getProductsByInventoryId(widget.inventoryId);
+      var products = await databaseHelper.getProducts(widget.inventoryId);
 
       setState(() {
         productList = products;
@@ -145,7 +144,8 @@ class _ProductListPageState extends State<ProductListPage> {
 
                 try {
                   // Call deleteProduct with the product ID
-                  await databaseHelper.deleteProduct(productId);
+                  await databaseHelper.deleteProduct(
+                      productId, widget.inventoryId);
 
                   // Refresh the list after deletion
                   await _refreshProductList();

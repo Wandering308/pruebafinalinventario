@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inventario_app_finish/domain/entities/product.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart'; // Fixed missing .dart extension
+import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
 
 class EditProductPage extends StatefulWidget {
   final Product product;
@@ -129,22 +129,20 @@ class _EditProductPageState extends State<EditProductPage> {
           price: double.parse(priceController.text),
           inventoryId:
               widget.product.inventoryId, // Preserve the original inventoryId
+          barcode: widget.product.barcode, // Preserve the original barcode
+          category: widget.product.category, // Preserve the original category
+          brand: widget.product.brand, // Preserve the original brand
         );
 
-        // Fix: Call toMap() on the product object before passing to updateProduct
-        int result = await databaseHelper.updateProduct(updatedProduct.toMap());
+        // Update the product in the database
+        await databaseHelper.updateProduct(updatedProduct);
 
         setState(() {
           _isLoading = false;
         });
 
-        if (result > 0) {
-          // Return true to indicate success
-          Navigator.pop(context, true);
-        } else {
-          _showErrorDialog(
-              'No se pudo actualizar el producto. Inténtalo de nuevo.');
-        }
+        // Return true to indicate success
+        Navigator.pop(context, true);
       } catch (e) {
         setState(() {
           _isLoading = false;

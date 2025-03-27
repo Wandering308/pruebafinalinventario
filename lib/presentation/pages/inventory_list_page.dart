@@ -28,19 +28,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Inventarios'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async {
-              // Navigate to add inventory page and wait for result
-
-              // Reload inventories when returning, regardless of result
-              if (mounted) {
-                context.read<InventoryBloc>().add(LoadInventories());
-              }
-            },
-          ),
-        ],
       ),
       body: BlocConsumer<InventoryBloc, InventoryState>(
         listener: (context, state) {
@@ -108,8 +95,10 @@ class _InventoryListPageState extends State<InventoryListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Reload inventories when returning
-          if (mounted) {
+          // Navigate to add inventory page and wait for result
+          final result = await Navigator.pushNamed(context, '/add_inventory');
+          // Reload inventories when returning, regardless of result
+          if (result == true) {
             context.read<InventoryBloc>().add(LoadInventories());
           }
         },
@@ -149,5 +138,3 @@ class _InventoryListPageState extends State<InventoryListPage> {
     );
   }
 }
-
-class InventoryDeleted {}

@@ -113,28 +113,24 @@ class _AddProductPageState extends State<AddProductPage> {
       try {
         // Create product object with the inventory ID
         Product product = Product(
-          id: '0', // Will be set by the database
+          id: DateTime.now()
+              .toString(), // Genera un ID único usando la fecha y hora actual
           name: nameController.text,
           quantity: int.parse(quantityController.text),
           price: double.parse(priceController.text),
           inventoryId:
-              widget.inventoryId, // Use the inventory ID from the widget
+              widget.inventoryId, // Usa el ID del inventario del widget
         );
 
-        // Fix: Call toMap() on the product object before passing to insertProduct
-        int result = await databaseHelper.insertProduct(product.toMap());
+        // Updated call to insertProduct
+        await databaseHelper.addProduct(product);
 
         setState(() {
           _isLoading = false;
         });
 
-        if (result > 0) {
-          // Return true to indicate success
-          Navigator.pop(context, true);
-        } else {
-          _showErrorDialog(
-              'No se pudo guardar el producto. Inténtalo de nuevo.');
-        }
+        // Return true to indicate success
+        Navigator.pop(context, true);
       } catch (e) {
         setState(() {
           _isLoading = false;

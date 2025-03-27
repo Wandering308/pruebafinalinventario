@@ -41,7 +41,6 @@ class InventoryDetailPage extends StatelessWidget {
       ),
       body: BlocProvider(
         create: (context) => InventoryBloc(
-          databaseHelper: DatabaseHelper(),
           localStorage:
               LocalStorageImpl(), // Asegúrate de usar la implementación correcta
           getInventories:
@@ -55,6 +54,7 @@ class InventoryDetailPage extends StatelessWidget {
           updateInventory:
               UpdateInventory(DatabaseHelper() as InventoryRepository),
           updateProduct: UpdateProduct(DatabaseHelper() as InventoryRepository),
+          databaseHelper: DatabaseHelper() as InventoryRepository,
         )..add(LoadProducts(inventoryId)),
         child: BlocBuilder<InventoryBloc, InventoryState>(
           builder: (context, state) {

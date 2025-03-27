@@ -41,6 +41,8 @@ class EditInventoryPage extends StatelessWidget {
                     final updatedInventory = Inventory(
                       id: inventory.id,
                       name: _nameController.text,
+                      description: inventory
+                          .description, // Preserve the original description
                     );
                     context.read<InventoryBloc>().add(
                           UpdateInventoryEvent(updatedInventory),

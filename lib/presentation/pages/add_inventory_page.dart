@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddInventoryPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -38,11 +37,13 @@ class AddInventoryPage extends StatelessWidget {
                     final newInventory = Inventory(
                       id: DateTime.now().toString(), // Genera un ID único
                       name: _nameController.text,
+                      description:
+                          null, // Añade una descripción si es necesario
                     );
                     context.read<InventoryBloc>().add(
                           AddInventoryEvent(newInventory),
                         );
-                    Navigator.pop(context);
+                    Navigator.pop(context, true); // Devuelve true al volver
                   }
                 },
                 child: Text('Agregar'),

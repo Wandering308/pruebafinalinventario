@@ -1,7 +1,11 @@
+// Asegúrate de importar `product.dart` y otros archivos necesarios
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:inventario_app_finish/domain/entities/inventory.dart';
+import 'package:inventario_app_finish/domain/entities/product.dart';
+import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
 
-class DatabaseHelper {
+class DatabaseHelper implements InventoryRepository {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
 
@@ -49,49 +53,59 @@ class DatabaseHelper {
     ''');
   }
 
-  Future<List<Map<String, dynamic>>> getInventories() async {
+  @override
+  Future<List<Inventory>> getInventories() async {
     final db = await database;
-    return await db.query('inventories');
+    final result = await db.query('inventories');
+    return result.map((json) => Inventory.fromJson(json)).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getProducts(String inventoryId) async {
+  @override
+  Future<List<Product>> getProducts(String inventoryId) async {
     final db = await database;
-    return await db
+    final result = await db
         .query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
+    return result.map((json) => Product.fromJson(json)).toList();
   }
 
-  Future<void> insertInventory(Map<String, dynamic> inventory) async {
+  @override
+  Future<void> addInventory(Inventory inventory) async {
     final db = await database;
-    await db.insert('inventories', inventory);
+    await db.insert('inventories', Inventory.toJson(inventory));
   }
 
-  Future<void> insertProduct(Map<String, dynamic> product) async {
+  @override
+  Future<void> addProduct(Product product) async {
     final db = await database;
-    await db.insert('products', product);
+    await db.insert('products', Product.toJson(product));
   }
 
+  @override
   Future<void> deleteInventory(String id) async {
     final db = await database;
     await db.delete('inventories', where: 'id = ?', whereArgs: [id]);
     await db.delete('products', where: 'inventoryId = ?', whereArgs: [id]);
   }
 
-  Future<void> deleteProduct(String id) async {
+  @override
+  Future<void> deleteProduct(String productId, String inventoryId) async {
     final db = await database;
-    await db.delete('products', where: 'id = ?', whereArgs: [id]);
+    await db.delete('products',
+        where: 'id = ? AND inventoryId = ?',
+        whereArgs: [productId, inventoryId]);
   }
 
-  Future<void> updateInventory(Map<String, dynamic> inventory) async {
+  @override
+  Future<void> updateInventory(Inventory inventory) async {
     final db = await database;
-    await db.update('inventories', inventory,
-        where: 'id = ?', whereArgs: [inventory['id']]);
+    await db.update('inventories', Inventory.toJson(inventory),
+        where: 'id = ?', whereArgs: [inventory.id]);
   }
 
-  Future<void> updateProduct(Map<String, dynamic> product) async {
+  @override
+  Future<void> updateProduct(Product product) async {
     final db = await database;
-    await db.update('products', product,
-        where: 'id = ?', whereArgs: [product['id']]);
+    await db.update('products', Product.toJson(product),
+        where: 'id = ?', whereArgs: [product.id]);
   }
-
-  getProductsByInventoryId(String inventoryId) {}
 }
