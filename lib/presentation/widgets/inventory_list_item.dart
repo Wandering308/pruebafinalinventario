@@ -8,12 +8,12 @@ class InventoryListItem extends StatelessWidget {
   final VoidCallback onLongPress;
 
   const InventoryListItem({
-    Key? key,
+    super.key,
     required this.inventory,
     required this.onTap,
     required this.onDelete,
     required this.onLongPress,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

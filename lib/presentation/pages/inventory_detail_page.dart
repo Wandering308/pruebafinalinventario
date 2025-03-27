@@ -12,7 +12,7 @@ import 'package:inventario_app_finish/domain/usecases/get_inventories.dart';
 import 'package:inventario_app_finish/domain/usecases/get_products.dart';
 import 'package:inventario_app_finish/domain/usecases/update_inventory.dart';
 import 'package:inventario_app_finish/domain/usecases/update_product.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper';
+import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
 
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage_impl.dart';
 import 'package:inventario_app_finish/presentation/widgets/product_list_item.dart';

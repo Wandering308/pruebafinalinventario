@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
-  
+
   DatabaseHelper._internal();
 
   static Database? _database;
@@ -56,7 +56,8 @@ class DatabaseHelper {
 
   Future<List<Map<String, dynamic>>> getProducts(String inventoryId) async {
     final db = await database;
-    return await db.query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
+    return await db
+        .query('products', where: 'inventoryId = ?', whereArgs: [inventoryId]);
   }
 
   Future<void> insertInventory(Map<String, dynamic> inventory) async {
@@ -82,11 +83,15 @@ class DatabaseHelper {
 
   Future<void> updateInventory(Map<String, dynamic> inventory) async {
     final db = await database;
-    await db.update('inventories', inventory, where: 'id = ?', whereArgs: [inventory['id']]);
+    await db.update('inventories', inventory,
+        where: 'id = ?', whereArgs: [inventory['id']]);
   }
 
   Future<void> updateProduct(Map<String, dynamic> product) async {
     final db = await database;
-    await db.update('products', product, where: 'id = ?', whereArgs: [product['id']]);
+    await db.update('products', product,
+        where: 'id = ?', whereArgs: [product['id']]);
   }
+
+  getProductsByInventoryId(String inventoryId) {}
 }

@@ -3,12 +3,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
-import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
-import 'package:inventario_app_finish/presentation/pages/product_list_page.dart'; // Importar la página de productos
+import 'package:inventario_app_finish/presentation/pages/product_list_page.dart';
 import 'package:inventario_app_finish/presentation/widgets/inventory_list_item.dart';
 
-class InventoryListPage extends StatelessWidget {
+class InventoryListPage extends StatefulWidget {
   const InventoryListPage({super.key});
+
+  @override
+  State<InventoryListPage> createState() => _InventoryListPageState();
+}
+
+class _InventoryListPageState extends State<InventoryListPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Ensure inventories are loaded when the page is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<InventoryBloc>().add(LoadInventories());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,66 +31,123 @@ class InventoryListPage extends StatelessWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.add),
-            onPressed: () {
-              // El BlocProvider debería estar fuera del MaterialPageRoute
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AddInventoryPage(),
-                ),
-              ).then((_) {
-                // Recargar inventarios al regresar a la pantalla principal
+            onPressed: () async {
+              // Navigate to add inventory page and wait for result
+
+              // Reload inventories when returning, regardless of result
+              if (mounted) {
                 context.read<InventoryBloc>().add(LoadInventories());
-              });
+              }
             },
           ),
         ],
       ),
-      body: BlocBuilder<InventoryBloc, InventoryState>(
+      body: BlocConsumer<InventoryBloc, InventoryState>(
+        listener: (context, state) {
+          // Show snackbar on errors or successful operations
+          if (state is InventoryError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
+          } else if (state is InventoryDeleted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Inventario eliminado con éxito')),
+            );
+            // Reload the inventory list after deletion
+            context.read<InventoryBloc>().add(LoadInventories());
+          }
+        },
         builder: (context, state) {
           if (state is InventoryLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is InventoryLoaded) {
-            return ListView.builder(
-              itemCount: state.inventories.length,
-              itemBuilder: (context, index) {
-                final inventory = state.inventories[index];
-                return InventoryListItem(
-                  inventory: inventory,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductListPage(
-                          inventoryId: inventory.id,
-                        ), // Navegar a la página de productos
-                      ),
-                    ).then((_) {
-                      // Recargar inventarios al regresar a la pantalla principal
-                      context.read<InventoryBloc>().add(LoadInventories());
-                    });
-                  },
-                  onDelete: () {
-                    context
-                        .read<InventoryBloc>()
-                        .add(DeleteInventoryEvent(inventory.id));
-                  },
-                  onLongPress: () {
-                    // Lógica para eliminar el inventario al mantener presionado
-                    context
-                        .read<InventoryBloc>()
-                        .add(DeleteInventoryEvent(inventory.id));
-                  },
-                );
+            if (state.inventories.isEmpty) {
+              return Center(child: Text('No hay inventarios disponibles'));
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                context.read<InventoryBloc>().add(LoadInventories());
               },
+              child: ListView.builder(
+                itemCount: state.inventories.length,
+                itemBuilder: (context, index) {
+                  final inventory = state.inventories[index];
+                  return InventoryListItem(
+                    inventory: inventory,
+                    onTap: () async {
+                      // Navigate to product list page and wait for result
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductListPage(
+                            inventoryId: inventory.id,
+                          ),
+                        ),
+                      );
+
+                      // Reload inventories when returning
+                      if (mounted) {
+                        context.read<InventoryBloc>().add(LoadInventories());
+                      }
+                    },
+                    onDelete: () {
+                      _showDeleteConfirmationDialog(context, inventory.id);
+                    },
+                    onLongPress: () {
+                      _showDeleteConfirmationDialog(context, inventory.id);
+                    },
+                  );
+                },
+              ),
             );
-          } else if (state is InventoryError) {
-            return Center(child: Text(state.message));
           } else {
             return Center(child: Text('No hay inventarios disponibles'));
           }
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // Reload inventories when returning
+          if (mounted) {
+            context.read<InventoryBloc>().add(LoadInventories());
+          }
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String inventoryId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Eliminar Inventario'),
+          content: Text(
+              '¿Estás seguro de que deseas eliminar este inventario? Esta acción no se puede deshacer.'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Eliminar'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                context
+                    .read<InventoryBloc>()
+                    .add(DeleteInventoryEvent(inventoryId));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
+
+class InventoryDeleted {}
