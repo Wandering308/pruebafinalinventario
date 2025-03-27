@@ -1,9 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/domain/repositories/inventory_repository.dart';
-
 import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
-
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage.dart';
 import 'package:inventario_app_finish/infrastructure/datasources/local_storage_impl.dart';
 import 'package:inventario_app_finish/infrastructure/repositories/inventory_repository_impl.dart';
@@ -18,7 +16,7 @@ import 'package:inventario_app_finish/domain/usecases/update_product.dart';
 
 final getIt = GetIt.instance;
 
-Future<void> setup() async {
+Future<void> setupLocator() async {
   // Datasources
   getIt.registerLazySingleton<LocalStorage>(() => LocalStorageImpl());
   getIt.registerLazySingleton<DatabaseHelper>(() => DatabaseHelper());

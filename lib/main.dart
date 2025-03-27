@@ -3,28 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/database_helper.dart';
-import 'package:inventario_app_finish/infrastructure/datasources/local_storage_impl.dart';
-import 'package:inventario_app_finish/domain/usecases/add_inventory.dart';
-import 'package:inventario_app_finish/domain/usecases/add_product.dart';
-import 'package:inventario_app_finish/domain/usecases/delete_inventory.dart';
-import 'package:inventario_app_finish/domain/usecases/delete_product.dart';
-import 'package:inventario_app_finish/domain/usecases/get_inventories.dart';
-import 'package:inventario_app_finish/domain/usecases/get_products.dart';
-import 'package:inventario_app_finish/domain/usecases/update_inventory.dart';
-import 'package:inventario_app_finish/domain/usecases/update_product.dart';
+
+import 'package:inventario_app_finish/injection.dart';
 import 'package:inventario_app_finish/presentation/pages/add_inventory_page.dart';
 import 'package:inventario_app_finish/presentation/pages/inventory_list_page.dart';
 
-// Importar sqflite_common_ffi
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   // Inicializar databaseFactory para plataformas que no sean móviles
   if (isDesktopOrWeb()) {
     sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
+    if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb;
+    } else {
+      databaseFactory = databaseFactoryFfi;
+    }
   }
+
+  await setupLocator();
 
   runApp(MyApp());
 }
@@ -42,18 +41,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => InventoryBloc(
-            databaseHelper: DatabaseHelper(),
-            localStorage: LocalStorageImpl(),
-            getInventories: GetInventories(DatabaseHelper()),
-            getProducts: GetProducts(DatabaseHelper()),
-            addInventory: AddInventory(DatabaseHelper()),
-            addProduct: AddProduct(DatabaseHelper()),
-            deleteInventory: DeleteInventory(DatabaseHelper()),
-            deleteProduct: DeleteProduct(DatabaseHelper()),
-            updateInventory: UpdateInventory(DatabaseHelper()),
-            updateProduct: UpdateProduct(DatabaseHelper()),
-          )..add(LoadInventories()),
+          create: (context) => getIt<InventoryBloc>()..add(LoadInventories()),
         ),
       ],
       child: MaterialApp(

@@ -23,6 +23,10 @@ class InventoryLoaded extends InventoryState {
   List<Object> get props => [inventories, products];
 }
 
+class InventoryAdded extends InventoryState {}
+
+class InventoryDeleted extends InventoryState {}
+
 class InventoryError extends InventoryState {
   final String message;
 
@@ -31,5 +35,3 @@ class InventoryError extends InventoryState {
   @override
   List<Object> get props => [message];
 }
-
-class InventoryDeleted extends InventoryState {}

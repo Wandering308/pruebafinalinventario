@@ -17,7 +17,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
   @override
   void initState() {
     super.initState();
-    // Ensure inventories are loaded when the page is created
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<InventoryBloc>().add(LoadInventories());
     });
@@ -31,7 +30,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
       ),
       body: BlocConsumer<InventoryBloc, InventoryState>(
         listener: (context, state) {
-          // Show snackbar on errors or successful operations
           if (state is InventoryError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
@@ -40,7 +38,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Inventario eliminado con éxito')),
             );
-            // Reload the inventory list after deletion
             context.read<InventoryBloc>().add(LoadInventories());
           }
         },
@@ -63,7 +60,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
                   return InventoryListItem(
                     inventory: inventory,
                     onTap: () async {
-                      // Navigate to product list page and wait for result
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -73,7 +69,6 @@ class _InventoryListPageState extends State<InventoryListPage> {
                         ),
                       );
 
-                      // Reload inventories when returning
                       if (mounted) {
                         context.read<InventoryBloc>().add(LoadInventories());
                       }
@@ -95,9 +90,7 @@ class _InventoryListPageState extends State<InventoryListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Navigate to add inventory page and wait for result
           final result = await Navigator.pushNamed(context, '/add_inventory');
-          // Reload inventories when returning, regardless of result
           if (result == true) {
             context.read<InventoryBloc>().add(LoadInventories());
           }

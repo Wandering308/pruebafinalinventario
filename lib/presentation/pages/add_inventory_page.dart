@@ -4,9 +4,11 @@ import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/domain/entities/inventory.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ignore: must_be_immutable
 class AddInventoryPage extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  bool _isButtonPressed = false;
 
   AddInventoryPage({super.key});
 
@@ -32,19 +34,22 @@ class AddInventoryPage extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final newInventory = Inventory(
-                      id: DateTime.now().toString(), // Genera un ID único
-                      name: _nameController.text,
-                      description: '', // Añade una descripción si es necesario
-                    );
-                    context.read<InventoryBloc>().add(
-                          AddInventoryEvent(newInventory),
-                        );
-                    Navigator.pop(context, true); // Devuelve true al volver
-                  }
-                },
+                onPressed: _isButtonPressed
+                    ? null
+                    : () {
+                        if (_formKey.currentState!.validate()) {
+                          final newInventory = Inventory(
+                            id: DateTime.now().toString(),
+                            name: _nameController.text,
+                            description: '',
+                          );
+                          context.read<InventoryBloc>().add(
+                                AddInventoryEvent(newInventory),
+                              );
+                          _isButtonPressed = true;
+                          Navigator.pop(context, true);
+                        }
+                      },
                 child: Text('Agregar'),
               ),
             ],
