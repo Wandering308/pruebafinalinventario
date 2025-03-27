@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_bloc.dart';
+import 'package:inventario_app_finish/application/bloc/inventory_event.dart';
 import 'package:inventario_app_finish/application/bloc/inventory_state.dart';
 import 'package:inventario_app_finish/presentation/pages/add_product_page.dart';
 
@@ -24,7 +25,10 @@ class ProductListPage extends StatelessWidget {
                   builder: (context) =>
                       AddProductPage(inventoryId: inventoryId),
                 ),
-              );
+              ).then((_) {
+                // Recargar productos al regresar a la pantalla de productos
+                context.read<InventoryBloc>().add(LoadProducts(inventoryId));
+              });
             },
           ),
         ],
