@@ -54,14 +54,9 @@ class InventoryRepositoryImpl implements InventoryRepository {
 
   @override
   Future<void> deleteProduct(String inventoryId, String productId) async {
-    // Cargar la lista de productos desde el almacenamiento local
     List<Product> products = await localStorage.loadProducts();
-
-    // Eliminar el producto con el ID especificado y el inventoryId correspondiente
     products.removeWhere((product) =>
         product.id == productId && product.inventoryId == inventoryId);
-
-    // Guardar la lista actualizada de productos en el almacenamiento local
     await localStorage.saveProducts(products);
   }
 

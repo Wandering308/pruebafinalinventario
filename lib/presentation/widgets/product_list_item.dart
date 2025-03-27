@@ -4,7 +4,8 @@ import 'package:inventario_app_finish/domain/entities/product.dart';
 class ProductListItem extends StatelessWidget {
   final Product product;
 
-  const ProductListItem({super.key, required this.product});
+  const ProductListItem(
+      {super.key, required this.product, required Null Function() onDelete});
 
   @override
   Widget build(BuildContext context) {
